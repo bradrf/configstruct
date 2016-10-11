@@ -11,6 +11,7 @@ with open('HISTORY.rst') as history_file:
 
 requirements = [
     'future>=0.15.2',
+    'configparser>=3.5.0',
 ]
 
 test_requirements = [

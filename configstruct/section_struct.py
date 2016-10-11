@@ -11,7 +11,7 @@ class SectionStruct(OpenStruct):
 
     def might_prefer(self, **items):
         '''Items to take precedence if their values are not None (never saved)'''
-        self._overrides = {k: v for k, v in items.iteritems() if v is not None}
+        self._overrides = dict((k, v) for (k, v) in items.items() if v is not None)
 
     def sync_with(self, config, conflict_resolver):
         if not config.has_section(self._name):
@@ -36,7 +36,7 @@ class SectionStruct(OpenStruct):
         return resolved
 
     def _resolve_mine(self, config, resolver, resolved):
-        for option, mine in self.iteritems():
+        for (option, mine) in self.items():
             if option in resolved:
                 continue
             if config.has_option(self._name, option):

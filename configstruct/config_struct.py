@@ -18,7 +18,7 @@ class ConfigStruct(OpenStruct):
     def __init__(self, config_file, **sections_defaults):
         super(ConfigStruct, self).__init__()
         self._config_file = config_file
-        for section, items in sections_defaults.iteritems():
+        for (section, items) in sections_defaults.items():
             self[section] = SectionStruct(section, **items)
         self._load(choose_theirs)
 
@@ -48,7 +48,7 @@ class ConfigStruct(OpenStruct):
         return loaded
 
     def _load_mine(self, config, resolver, loaded):
-        for name, section in self.iteritems():
+        for (name, section) in self.items():
             if name in loaded:
                 continue
             section.sync_with(config, resolver)
