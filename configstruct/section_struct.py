@@ -1,6 +1,7 @@
 from ast import literal_eval
 from .open_struct import OpenStruct
 
+
 class SectionStruct(OpenStruct):
     '''Provides method access to a set of items.'''
 
@@ -27,7 +28,6 @@ class SectionStruct(OpenStruct):
         '''Synchronize all items represented by the config according to the resolver and return a
         set of keys that have been resolved.'''
         resolved = set()
-        print 'barf', self._name, config.items(self._name)
         for key, theirs in config.items(self._name):
             theirs = self._real_value_of(theirs)
             if key in self:

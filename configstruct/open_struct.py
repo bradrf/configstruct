@@ -20,5 +20,5 @@ class OpenStruct(dict):
         return key in self
 
     def __delattr__(self, key):
-        if ken in self:
+        if key in self:
             del(self[key])
