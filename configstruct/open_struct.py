@@ -17,8 +17,8 @@ class OpenStruct(dict):
             self[key] = value
 
     def __hasattr__(self, key):
-        return self.has_key(key)
+        return key in self
 
     def __delattr__(self, key):
-        if self.has_key(key):
+        if ken in self:
             del(self[key])

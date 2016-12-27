@@ -14,41 +14,40 @@ class SectionStruct(OpenStruct):
         self._overrides = dict((k, v) for (k, v) in items.items() if v is not None)
 
     def sync_with(self, config, conflict_resolver):
+        '''Synchronizes current set of key/values in this instance with those in the config.'''
         if not config.has_section(self._name):
             config.add_section(self._name)
-        resolved = self._resolve_theirs(config, conflict_resolver)
-        self._resolve_mine(config, conflict_resolver, resolved)
+        resolved = self._sync_and_resolve(config, conflict_resolver)
+        self._add_new_items(config, resolved)
 
     ######################################################################
     # private
 
-    def _resolve_theirs(self, config, resolver):
+    def _sync_and_resolve(self, config, resolver):
+        '''Synchronize all items represented by the config according to the resolver and return a
+        set of keys that have been resolved.'''
         resolved = set()
-        for option, theirs in config.items(self._name):
+        print 'barf', self._name, config.items(self._name)
+        for key, theirs in config.items(self._name):
             theirs = self._real_value_of(theirs)
-            if self.has_key(option):
-                mine = self[option]
-                value = resolver(self._name, option, mine, theirs)
+            if key in self:
+                mine = self[key]
+                value = resolver(self._name, key, mine, theirs)
             else:
                 value = theirs
-            self._set_value(config, option, value)
-            resolved.add(option)
+            self._set_value(config, key, value)
+            resolved.add(key)
         return resolved
 
-    def _resolve_mine(self, config, resolver, resolved):
-        for (option, mine) in self.items():
-            if option in resolved:
-                continue
-            if config.has_option(self._name, option):
-                theirs = self._real_value_of(config.get(self._name, option))
-                value = resolver(self._name, option, mine, theirs)
-            else:
-                value = mine
-            self._set_value(config, option, value)
+    def _add_new_items(self, config, seen):
+        '''Add new (unseen) items to the config.'''
+        for (key, value) in self.items():
+            if key not in seen:
+                self._set_value(config, key, value)
 
-    def _set_value(self, config, option, value):
-        config.set(self._name, option, str(value))
-        self[option] = value
+    def _set_value(self, config, key, value):
+        config.set(self._name, key, str(value))
+        self[key] = value
 
     def _real_value_of(self, value):
         try:
@@ -56,16 +55,16 @@ class SectionStruct(OpenStruct):
         except:
             return value
 
-    def __getattr__(self, option):
-        if option in self._overrides:
-            return self._overrides[option]
-        return super(SectionStruct, self).__getattr__(option)
+    def __getattr__(self, key):
+        if key in self._overrides:
+            return self._overrides[key]
+        return super(SectionStruct, self).__getattr__(key)
 
-    def __setattr__(self, option, value):
-        super(SectionStruct, self).__setattr__(option, value)
-        if option in self._overrides:
+    def __setattr__(self, key, value):
+        super(SectionStruct, self).__setattr__(key, value)
+        if key in self._overrides:
             # if being explicitly set, the override is no longer applicable
-            del(self._overrides[option])
+            del(self._overrides[key])
 
     def __repr__(self):
         if len(self._overrides) > 0:
