@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os
+import logging
 import pytest
 import mockfs
 
@@ -80,3 +81,26 @@ class TestConfigStruct(object):
         with open('/home/mycfg') as fh:
             body = fh.read().strip()
             assert 'two = 2' in body and 'one = never mind' in body
+
+    def test_default_logging_options(self):
+        cfg = ConfigStruct('/home/mycfg', 'options')
+        cfg.save()
+        with open('/home/mycfg') as fh:
+            body = fh.read().strip()
+            assert 'log_level = info' in body and 'log_file = STDERR' in body
+
+    def test_default_logging(self, capsys):
+        cfg = ConfigStruct('/home/mycfg', 'options')
+        cfg.configure_basic_logging('me')
+        main_logger = logging.getLogger('me')
+        child_logger = main_logger.getChild('runt')
+        other_logger = logging.getLogger('stranger')
+        main_logger.info('main info')
+        child_logger.info('child info')
+        other_logger.info('other info')
+        other_logger.warn('other warn')
+        out, err = capsys.readouterr()
+        assert('main info' in err and
+               'child info' in err and
+               'other warn' in err and
+               not 'other info' in err)

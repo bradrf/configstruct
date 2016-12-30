@@ -52,17 +52,16 @@ lint: ## check style with flake8
 
 test: ## run tests quickly with the default Python
 	py.test
-	
+
 
 test-all: ## run tests on every Python version with tox
 	tox
 
 coverage: ## check code coverage quickly with the default Python
-	coverage run --source configstruct py.test
-	
-		coverage report -m
-		coverage html
-		$(BROWSER) htmlcov/index.html
+	coverage run --source configstruct -m py.test
+	coverage report -m
+	coverage html
+	$(BROWSER) htmlcov/index.html
 
 docs: ## generate Sphinx HTML documentation, including API docs
 	rm -f docs/configstruct.rst
