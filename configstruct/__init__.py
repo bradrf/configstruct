@@ -3,4 +3,4 @@ from .config_struct import ConfigStruct  # noqa: F401
 
 __author__ = 'Brad Robel-Forrest'
 __email__ = 'brad@bitpony.com'
-__version__ = '0.2.0'
+__version__ = '0.3.0'
